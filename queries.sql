@@ -1,0 +1,4 @@
+select
+	count(customer_id) as customers_count
+from customers
+/* Вычисление количества клиентов из таблицы "сustomers"*/
