@@ -202,3 +202,57 @@ on tab4.selling_month = tab3.selling_month
  * в каждом месяце
  */
 
+--------------------------------------------------------------
+
+/* В данном запросе мы нашли даты первых покупок в ходе
+ * проведения акции
+ * special_offer
+ */
+
+with tab1 as ( -- В этом подзапросе мы создаём общую таблицу со всеми данными
+select		   -- необходимыми для нахождения искомых значений.
+	s.customer_id,
+	concat(c.first_name,' ',c.last_name) as customer,
+	sale_date,
+	concat(e.first_name,' ',e.last_name) as seller,
+	p.price
+from sales s
+left join 
+	customers c
+	on s.customer_id = c.customer_id 
+left join 
+	employees e
+	on s.sales_person_id = e.employee_id 
+left join 
+	products p 
+	on s.product_id = p.product_id
+order by sale_date -- Сортировка по дате asc для поиска будующих акционных покупок.
+),
+tab2 as ( -- В подзапросе tab2 мы нумируем все записи для поиска первой покупки.
+select
+	*,
+	row_number () 
+		over (partition by customer, sale_date, seller) as flag_1 
+from tab1
+),
+tab3 as ( -- В этом подзапросе мы выбираем записи в которых первая покупка была в ходе
+select	  -- проведения акции (price = 0).
+	customer,
+	sale_date,
+ 	seller,
+ 	row_number () 
+		over (partition by customer, seller) as flag_2 -- Нумерация пары клиент - продавец.
+from tab2
+where flag_1 = 1 and price = 0
+order by customer_id
+)
+select 	  -- Итоговый запрос отражающий искомые данные: клиента дату первой покупки - продавца.
+	customer,
+	sale_date,
+	seller
+from tab3
+where flag_2 = 1 -- условие выбора первого дня акции для каждого клиента - продавца.
+
+
+
+
