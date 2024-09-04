@@ -129,4 +129,76 @@ from tab2
 /* Итоговая витрина продаж в разрезе продавцов и дней
 */
 
+--------------------------------------------------------------
+
+/* Запрос по вычислению количества покупателей в разрезе
+ * возрастных групп.
+ * age_groups
+*/
+with tab1 as ()
+select 
+	*,
+	case -- Присвоение категорий каждому диапазону возрастов
+		when age between 16 and 25 then '16-25'
+		when age between 26 and 40 then '26-40'
+		when age > 40 then '40+'
+	end as age_category
+from customers c 
+)
+select 
+	distinct age_category,
+	count(age) over (partition by age_category) as age_count -- подсчёт количества покупателей в категории
+from tab1
+order by age_category;
+
+--------------------------------------------------------------
+
+/* В этом подзапросе мы вычисляем количество уникальных покупателей
+ * и выручки в разрезе каждого месяца.
+ * customers_by_month
+ */
+with tab1 as ( -- В подзапросе tab1 происходит приведение данных
+select	       -- к необходимым типам.
+	to_char(s.sale_date, 'YYYY-MM') as selling_month,
+	concat(c.first_name,' ',c.last_name) as customer_name
+from sales s
+left join 
+	customers c 
+	on s.customer_id = c.customer_id
+),
+tab2 as (     -- В подзапросе tab2 мы находим уникальных покупателей в каждом месяце.
+select distinct customer_name,
+selling_month
+from tab1
+),
+tab3 as (     -- В подзапросе tab3 мы находим количество уникальных покупателей
+select	      -- в разрезе каждого месяца.
+	distinct selling_month,
+	count(customer_name)
+		over (partition by selling_month)
+from tab2
+),
+tab4 as (     -- tab4 представляет собой CTE с данными для подсчета суммарной выручки
+select        -- в итоговом запросе.
+	to_char(s.sale_date, 'YYYY-MM') as selling_month,
+	p.product_id,
+	s.quantity,
+	p.price
+from sales s
+left join 
+	products p 
+	on s.product_id = p.product_id
+)
+select	     
+	distinct tab4.selling_month,
+	tab3.count as total_customers,
+	round(sum(tab4.price*tab4.quantity) 
+		over (partition by tab4.selling_month)) as income
+from tab4
+inner join tab3
+on tab4.selling_month = tab3.selling_month
+/* В итоговом запросе мы соеденили CTE tab4 и tab3 по месяцам,
+ * посчитали и округлили суммарную выручку по месяцам и указали количество уникальных клиентов
+ * в каждом месяце
+ */
 
