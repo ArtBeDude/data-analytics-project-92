@@ -6,6 +6,7 @@ select
 from customers
 /* Вычисление количества клиентов из таблицы "сustomers"*/
 
+--------------------------------------------------------------
 	
 /* Запрос на поиск топ 10 продавцов с самыми большими суммами
 продаж.
@@ -41,6 +42,7 @@ limit 10
 /* В итоговом запросе мы получили таблицу с 10-ю продавцами
    с самыми большими суммами продаж. */
 
+--------------------------------------------------------------	
 
 /* Запрос по поиску худших продавцов по средней сумме продаж
 * lowest_average_income
@@ -82,8 +84,49 @@ from tab2
 group by 1,2
 having round(average_income) < AVG(average_income)
 order by average_income
+	
+--------------------------------------------------------------
 
+/* Запрос по поиску продаж продавцов в разрезе дней недели.
+ * day_of_week_income
+ */
+with tab1 as (
+select 
+	concat(e.first_name,' ',e.last_name) as seller,
+	p.product_id,
+	s.quantity,
+	p.price,
+	(EXTRACT(ISODOW FROM s.sale_date) - 1) as num_of_day, -- приводим нумерацию к Mon = 0
+	to_char(s.sale_date, 'Day') as day_of_week -- выделяем название дня недели
+from sales s
+left join 
+	employees e 
+	on s.sales_person_id = e.employee_id 
+left join 
+	products p 
+	on s.product_id = p.product_id
+),
+/* В подзапросе tab2 мы выводим уникальных продавцов и
+ * считаем сумму продаж каждого продавца в партиции продавца и дня недели
+ */ 
 
+tab2 as (
+select
+	distinct seller,
+	day_of_week,
+	sum(price * quantity)
+		over (partition by seller, day_of_week) as income,
+	num_of_day
+from tab1
+order by num_of_day, seller
+)
+select
+	seller,
+	day_of_week,
+	round(income)
+from tab2
 
+/* Итоговая витрина продаж в разрезе продавцов и дней
+*/
 
 
