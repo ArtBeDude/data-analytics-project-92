@@ -1,4 +1,6 @@
-/* Запрос на поиск количества клиентов из таблицы */
+/* Запрос на поиск количества клиентов из таблицы
+* customer_count
+*/
 select
 	count(customer_id) as customers_count
 from customers
@@ -6,7 +8,9 @@ from customers
 
 	
 /* Запрос на поиск топ 10 продавцов с самыми большими суммами
-продаж.*/
+продаж.
+* top_10_total_income
+*/
 with tab1 as (                                       
 select 
 	concat(e.first_name,' ',e.last_name) as seller,
@@ -25,8 +29,6 @@ left join
  * Выбираем необходимые столбцы, объеденяем столбцы "e.first_name" и "e.last_name" из
  * таблицы "employees"
 */
-
-	
 select
 	distinct seller, -- Выбор уникальных продавцов
 	count(*) 
@@ -41,6 +43,7 @@ limit 10
 
 
 /* Запрос по поиску худших продавцов по средней сумме продаж
+* lowest_average_income
 */	
 with tab1 as (
 select 
