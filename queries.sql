@@ -123,7 +123,7 @@ order by num_of_day, seller
 select
 	seller,
 	day_of_week,
-	floor(income)
+	floor(income) as income
 from tab2
 
 /* Итоговая витрина продаж в разрезе продавцов и дней
