@@ -68,8 +68,8 @@ left join
 tab2 as (
 select
 	 distinct seller, -- оставляем только уникальные имена продавцов
-	AVG(quantity * price) 
-		over (partition by seller) as average_income, -- Вычисляем среднюю сумму продажи по продавцу
+	floor(AVG(quantity * price) 
+		over (partition by seller)) as average_income, -- Вычисляем среднюю сумму продажи по продавцу
 	AVG(quantity * price) 
 		over () as avg_total -- Вычисляем среднюю сумму по всем продажам
 from tab1
@@ -79,11 +79,11 @@ from tab1
  */
 select
 	seller,
-	round(average_income) as average_income -- округляем значение до целого числа
+	average_income as average_income -- округляем значение до целого числа
 from tab2
 group by 1,2
-having round(average_income) < AVG(average_income)
-order by average_income
+having average_income < AVG(avg_total)
+order by average_income	
 	
 --------------------------------------------------------------
 
