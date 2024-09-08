@@ -192,7 +192,7 @@ left join
 select	     
 	distinct tab4.selling_month,
 	tab3.count as total_customers,
-	round(sum(tab4.price*tab4.quantity) 
+	floor(sum(tab4.price*tab4.quantity) 
 		over (partition by tab4.selling_month)) as income
 from tab4
 inner join tab3
