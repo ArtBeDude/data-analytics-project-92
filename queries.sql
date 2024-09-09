@@ -206,7 +206,7 @@ on tab4.selling_month = tab3.selling_month
 
 /* В этом запросе мы будем искать даты первых акционных покупок
  * клиентами.
- * **special_offer**
+ * __special_offer__
 */
 
 with tab1 as (
