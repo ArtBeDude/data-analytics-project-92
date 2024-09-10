@@ -10,8 +10,8 @@ from customers;
 /* Request to find the top 10 sellers with the highest amounts sales
 * top_10_total_income
 * In the subquery "tab1" we join the tables according to their id references.
-* Select the required columns, merge the columns "e.first_name" and "e.last_name" from
-* "employees" tables
+* Select the required columns, merge the columns "e.first_name" 
+* and "e.last_name" from "employees" table
 */
 with tab1 as (
 select
