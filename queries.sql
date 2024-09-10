@@ -19,7 +19,7 @@ with tab1 as (
         p.product_id,
         s.quantity,
         p.price
-	from sales as s
+    from sales as s
 	left join employees as e
 	on s.sales_person_id = e.employee_id
 	left join products as p
