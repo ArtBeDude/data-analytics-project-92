@@ -10,7 +10,7 @@ from customers;
 /* Request to find the top 10 sellers with the highest amounts sales
 * top_10_total_income
 */
-with tab1 as (                                       
+with tab1 as (                                 
 	select 
 		concat(e.first_name,' ',e.last_name) as seller,
 		p.product_id,
