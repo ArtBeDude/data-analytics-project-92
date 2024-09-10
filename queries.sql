@@ -1,12 +1,9 @@
 /* Quer to determine the number of clients
 * customer_count
 */
-select
-	count(customer_id) as customers_count
+select count(customer_id) as customers_count
 from customers
-
 --------------------------------------------------------------
-	
 /* Query to find the top 10 sellers with the highest amounts
 sales
 * top_10_total_income
@@ -200,9 +197,4 @@ select
 	seller
 from tab1 
 where flag_1 = 1 and flag_2 = 1
-order by customer_id
-
-
-
-
-
+order by customer_id;
