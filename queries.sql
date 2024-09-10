@@ -16,10 +16,10 @@ with tab1 as (
 	p.product_id,
 	s.quantity,
 	p.price
-	from sales s
-	left join employees e 
+	from sales AS s
+	left join employees AS e 
 	on s.sales_person_id = e.employee_id
-	left join products p 
+	left join products AS p 
 	on s.product_id = p.product_id
 )
 /* In the subquery "tab1" we join the tables according to their id references.
@@ -49,10 +49,10 @@ with tab1 as (
 		p.product_id,
 		s.quantity,
 		p.price
-	from sales s
-	left join employees e 
+	from sales AS s
+	left join employees AS e 
 	on s.sales_person_id = e.employee_id
-	left join products p 
+	left join products AS p 
 	on s.product_id = p.product_id
 ),
 /* В подзапросе "tab1" мы соединяем таблицы согласно референсам их id.
@@ -73,7 +73,7 @@ tab2 as (
  */
 select
 	seller,
-	average_income as average_income -- округляем значение до целого числа
+	average_income AS average_income -- округляем значение до целого числа
 from tab2
 group by 1,2
 having average_income < AVG(avg_total)
@@ -92,10 +92,10 @@ with tab1 as (
 		p.price,
 		(EXTRACT(ISODOW FROM s.sale_date) - 1) as num_of_day, -- приводим нумерацию к Mon = 0
 		to_char(s.sale_date, 'Day') as day_of_week -- выделяем название дня недели
-	from sales s
-	left join employees e 
+	from sales AS s
+	left join employees AS e 
 	on s.sales_person_id = e.employee_id
-	left join products p 
+	left join products AS p 
 	on s.product_id = p.product_id
 ),
 /* В подзапросе tab2 мы выводим уникальных продавцов и
@@ -151,8 +151,8 @@ with tab1 as ( -- В подзапросе tab1 происходит привед
 	select -- к необходимым типам.
 		to_char(s.sale_date, 'YYYY-MM') as selling_month,
 		concat(c.first_name,' ', c.last_name) as customer_name
-	from sales s
-	left join customers c 
+	from sales AS s
+	left join customers AS c
 	on s.customer_id = c.customer_id
 ),
 tab2 as (     -- В подзапросе tab2 мы находим уникальных покупателей в каждом месяце.
@@ -174,8 +174,8 @@ tab4 as (     -- tab4 представляет собой CTE с данными 
 		p.product_id,
 		s.quantity,
 		p.price
-	from sales s
-	left join products p 
+	from sales AS s
+	left join products AS p
 	on s.product_id = p.product_id
 )
 select	     
@@ -211,12 +211,12 @@ with tab1 as (
 				order by sale_date) as flag_1,
 		row_number () -- присваиваем номер каждой записи с клиентом для последующего отбора первого значения
 			over (partition by concat(c.first_name,' ', c.last_name)) as flag_2 
-	from sales s
-	left join customers c
+	from sales AS s
+	left join customers AS c
 	on s.customer_id = c.customer_id
-	left join employees e
+	left join employees AS e
 	on s.sales_person_id = e.employee_id
-	left join products p 
+	left join products AS p
 	on s.product_id = p.product_id
 	where price = 0 - условие выбора записей соответствующее акции
 )
