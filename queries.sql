@@ -3,11 +3,14 @@
 */
 select count(customer_id) as customers_count
 from customers
+	
 --------------------------------------------------------------
+
 /* Query to find the top 10 sellers with the highest amounts
 sales
 * top_10_total_income
 */
+
 with tab1 as (                                       
 select 
 	concat(e.first_name,' ',e.last_name) as seller,
@@ -21,7 +24,7 @@ left join
 left join 
 	products p 
 	on s.product_id = p.product_id
-)
+),
 /* In the subquery "tab1" we join the tables according to their id references.
  * Select the required columns, merge the columns "e.first_name" and "e.last_name" from
  * "employees" tables
