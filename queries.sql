@@ -12,7 +12,7 @@ from customers;
 */
 with tab1 as (                                 
 	select 
-		concat(e.first_name,' ',e.last_name) as seller,
+		concat(e.first_name,' ', e.last_name) as seller,
 		p.product_id,
 		s.quantity,
 		p.price
@@ -45,7 +45,7 @@ limit 10;
 */	
 with tab1 as (
 	select 
-		concat(e.first_name,' ',e.last_name) as seller,
+		concat(e.first_name,' ', e.last_name) as seller,
 		p.product_id,
 		s.quantity,
 		p.price
@@ -86,7 +86,7 @@ order by average_income;
  */
 with tab1 as (
 	select 
-		concat(e.first_name,' ',e.last_name) as seller,
+		concat(e.first_name,' ', e.last_name) as seller,
 		p.product_id,
 		s.quantity,
 		p.price,
@@ -150,7 +150,7 @@ order by age_category;
 with tab1 as ( -- В подзапросе tab1 происходит приведение данных
 	select -- к необходимым типам.
 		to_char(s.sale_date, 'YYYY-MM') as selling_month,
-		concat(c.first_name,' ',c.last_name) as customer_name
+		concat(c.first_name,' ', c.last_name) as customer_name
 	from sales s
 	left join customers c 
 	on s.customer_id = c.customer_id
@@ -181,7 +181,7 @@ tab4 as (     -- tab4 представляет собой CTE с данными 
 select	     
 	distinct tab4.selling_month,
 	tab3.count as total_customers,
-	floor(sum(tab4.price*tab4.quantity) 
+	floor(sum(tab4.price * tab4.quantity) 
 		over (partition by tab4.selling_month)) as income
 from tab4
 inner join tab3
@@ -201,16 +201,16 @@ on tab4.selling_month = tab3.selling_month;
 with tab1 as (
 	select		   
 		s.customer_id,
-		concat(c.first_name,' ',c.last_name) as customer, - объеденяем имя и фамилию
+		concat(c.first_name,' ', c.last_name) as customer, - объеденяем имя и фамилию
 		sale_date,
-		concat(e.first_name,' ',e.last_name) as seller,
+		concat(e.first_name,' ', e.last_name) as seller,
 		p.price,
 		row_number () -- присваиваем номера в партиции клиент, продавец с сортировкой по дате ASC
-			over (partition by concat(c.first_name,' ',c.last_name),  
-				concat(e.first_name,' ',e.last_name) 
+			over (partition by concat(c.first_name,' ', c.last_name),  
+				concat(e.first_name,' ', e.last_name) 
 				order by sale_date) as flag_1,
 		row_number () -- присваиваем номер каждой записи с клиентом для последующего отбора первого значения
-			over (partition by concat(c.first_name,' ',c.last_name)) as flag_2 
+			over (partition by concat(c.first_name,' ', c.last_name)) as flag_2 
 	from sales s
 	left join customers c
 	on s.customer_id = c.customer_id
