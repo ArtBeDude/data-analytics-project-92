@@ -12,18 +12,18 @@ sales
 */
 
 with tab1 as (                                      
-select
-	concat(e.first_name,' ',e.last_name) as seller,
-	p.product_id,
-	s.quantity,
-	p.price
-from sales s
-left join
-	employees e 
-	on s.sales_person_id = e.employee_id 
-left join
-	products p 
-	on s.product_id = p.product_id
+	select
+		concat(e.first_name,' ',e.last_name) as seller,
+		p.product_id,
+		s.quantity,
+		p.price
+	from sales s
+	left join
+		employees e 
+		on s.sales_person_id = e.employee_id 
+	left join
+		products p 
+		on s.product_id = p.product_id
 ),
 /* In the subquery "tab1" we join the tables according to their id references.
  * Select the required columns, merge the columns "e.first_name" and "e.last_name" from
@@ -108,10 +108,10 @@ from tab2
 
 --------------------------------------------------------------
 
-with tab1 as ()
+with tab1 as (
 select 
 	*,
-	case -- 
+	case 
 		when age between 16 and 25 then '16-25'
 		when age between 26 and 40 then '26-40'
 		when age > 40 then '40+'
