@@ -12,10 +12,10 @@ from customers;
 */
 with tab1 as (                                 
 	select 
-		concat(e.first_name,' ', e.last_name) as seller,
-		p.product_id,
-		s.quantity,
-		p.price
+	concat(e.first_name,' ', e.last_name) as seller,
+	p.product_id,
+	s.quantity,
+	p.price
 	from sales s
 	left join employees e 
 	on s.sales_person_id = e.employee_id
