@@ -1,4 +1,4 @@
-/* Запрос на поиск количества клиентов из таблицы
+/* Quer to determine the number of clients
 * customer_count
 */
 select
@@ -8,8 +8,8 @@ from customers
 
 --------------------------------------------------------------
 	
-/* Запрос на поиск топ 10 продавцов с самыми большими суммами
-продаж.
+/* Request to find the top 10 sellers with the highest amounts
+sales
 * top_10_total_income
 */
 with tab1 as (                                       
@@ -26,9 +26,9 @@ left join
 	products p 
 	on s.product_id = p.product_id
 )
-/* В подзапросе "tab1" мы соединяем таблицы согласно референсам их id.
- * Выбираем необходимые столбцы, объеденяем столбцы "e.first_name" и "e.last_name" из
- * таблицы "employees"
+/* In the subquery "tab1" we join the tables according to their id references.
+ * Select the required columns, merge the columns "e.first_name" and "e.last_name" from
+ * "employees" tables
 */
 select
 	distinct seller, -- Выбор уникальных продавцов
