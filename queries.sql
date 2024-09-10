@@ -3,7 +3,7 @@
 */
 select count(customer_id) as customers_count
 from customers
-	
+
 --------------------------------------------------------------
 
 /* Query to find the top 10 sellers with the highest amounts
@@ -11,17 +11,17 @@ sales
 * top_10_total_income
 */
 
-with tab1 as (                                       
-select 
+with tab1 as (                                      
+select
 	concat(e.first_name,' ',e.last_name) as seller,
 	p.product_id,
 	s.quantity,
 	p.price
 from sales s
-left join 
+left join
 	employees e 
 	on s.sales_person_id = e.employee_id 
-left join 
+left join
 	products p 
 	on s.product_id = p.product_id
 ),
