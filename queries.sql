@@ -9,28 +9,27 @@ from customers;
 
 /* Request to find the top 10 sellers with the highest amounts sales
 * top_10_total_income
+* In the subquery "tab1" we join the tables according to their id references.
+* Select the required columns, merge the columns "e.first_name" and "e.last_name" from
+* "employees" tables
 */
 with tab1 as (
-select 
+select
 	concat(e.first_name, ' ', e.last_name) as seller,
 	p.product_id,
 	s.quantity,
 	p.price
 	from sales as s
-	left join employees as e 
+	left join employees as e
 	on s.sales_person_id = e.employee_id
-	left join products as p 
+	left join products as p
 	on s.product_id = p.product_id
 )
-/* In the subquery "tab1" we join the tables according to their id references.
- * Select the required columns, merge the columns "e.first_name" and "e.last_name" from
- * "employees" tables
-*/
 select
 	distinct seller, -- Сhoose only unique sellers
-	count(*) 
+	count(*)
 		over (partition by seller) as operations, -- Вычисление количества операций одного продавца
-	floor(sum(quantity * price) 
+	floor(sum(quantity * price)
 		over (partition by seller)) as income -- Вычисление суммы продаж продавца и округление до целого
 from tab1
 order by income desc
@@ -44,7 +43,7 @@ limit 10;
 * lowest_average_income
 */	
 with tab1 as (
-	select 
+	select
 		concat(e.first_name, ' ', e.last_name) as seller,
 		p.product_id,
 		s.quantity,
