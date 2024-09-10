@@ -19,7 +19,6 @@ with tab1 as (
 	from sales s
 	left join employees e 
 	on s.sales_person_id = e.employee_id
-	
 	left join products p 
 	on s.product_id = p.product_id
 )
@@ -53,7 +52,6 @@ with tab1 as (
 	from sales s
 	left join employees e 
 	on s.sales_person_id = e.employee_id
-	
 	left join products p 
 	on s.product_id = p.product_id
 ),
@@ -216,10 +214,8 @@ with tab1 as (
 	from sales s
 	left join customers c
 	on s.customer_id = c.customer_id
-	
 	left join employees e
 	on s.sales_person_id = e.employee_id
-	
 	left join products p 
 	on s.product_id = p.product_id
 	where price = 0 - условие выбора записей соответствующее акции
