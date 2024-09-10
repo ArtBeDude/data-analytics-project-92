@@ -14,11 +14,11 @@ from customers;
 * and "e.last_name" from "employees" table
 */
 with tab1 as (
-	select
-		concat(e.first_name, ' ', e.last_name) as seller,
-		p.product_id,
-		s.quantity,
-		p.price
+    select
+        concat(e.first_name, ' ', e.last_name) as seller,
+        p.product_id,
+        s.quantity,
+        p.price
 	from sales as s
 	left join employees as e
 	on s.sales_person_id = e.employee_id
