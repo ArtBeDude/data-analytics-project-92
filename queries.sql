@@ -2,8 +2,7 @@
 * customer_count
 */
 select count(customer_id) as customers_count
-from customers
-;
+from customers;
 /* Вычисление количества клиентов из таблицы "сustomers"*/
 
 
@@ -36,8 +35,7 @@ select
 		over (partition by seller)) as income -- Вычисление суммы продаж продавца и округление до целого
 from tab1
 order by income desc
-limit 10
-;
+limit 10;
 /* В итоговом запросе мы получили таблицу с 10-ю продавцами
    с самыми большими суммами продаж. */
 
@@ -81,8 +79,7 @@ select
 from tab2
 group by 1,2
 having average_income < AVG(avg_total)
-order by average_income
-;
+order by average_income;
 
 
 
@@ -120,8 +117,7 @@ select
 	seller,
 	day_of_week,
 	floor(income) as income
-from tab2
-;
+from tab2;
 /* Итоговая витрина продаж в разрезе продавцов и дней
 */
 
@@ -145,8 +141,7 @@ select
 	distinct age_category,
 	count(age) over (partition by age_category) as age_count -- подсчёт количества покупателей в категории
 from tab1
-order by age_category
-;
+order by age_category;
 
 --------------------------------------------------------------
 
@@ -192,8 +187,7 @@ select
 		over (partition by tab4.selling_month)) as income
 from tab4
 inner join tab3
-on tab4.selling_month = tab3.selling_month
-;
+on tab4.selling_month = tab3.selling_month;
 /* В итоговом запросе мы соеденили CTE tab4 и tab3 по месяцам,
  * посчитали и округлили суммарную выручку по месяцам и указали количество уникальных клиентов
  * в каждом месяце
@@ -236,8 +230,8 @@ select
 	seller
 from tab1 
 where flag_1 = 1 and flag_2 = 1 -- выбор flag_1 = первая клиент-дата, flag_2 = одна запись - один клиент
-order by customer_id -- сортировка записей по id клиента
-;
+order by customer_id; -- сортировка записей по id клиента
+
 /* Итоговая таблица предоставляет даты первых покупок клиентами соответствующих условиям акции
  *
 
