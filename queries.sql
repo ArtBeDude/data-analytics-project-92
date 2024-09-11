@@ -57,7 +57,6 @@ with tab1 as (
     left join products as p
         on s.product_id = p.product_id
 ),
-
 /* В подзапросе "tab1" мы соединяем таблицы согласно референсам их id.
  * Выбираем необходимые столбцы, объеденяем столбцы "e.first_name" и "e.last_name" из
  * таблицы "employees"
