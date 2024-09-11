@@ -25,7 +25,6 @@ with tab1 as (
     left join products as p
         on s.product_id = p.product_id
 )
-
 select distinct
     seller, -- Сhoose only unique sellers
     count(*)
@@ -40,6 +39,7 @@ order by income desc
 limit 10;
 /* В итоговом запросе мы получили таблицу с 10-ю продавцами
    с самыми большими суммами продаж. */
+
 
 
 /* Запрос по поиску худших продавцов по средней сумме продаж
@@ -168,7 +168,7 @@ tab3 as (     -- В подзапросе tab3 мы находим количес
    from tab2
 ),
 tab4 as (     -- tab4 представляет собой CTE с данными для подсчета суммарной выручки
-   select        -- в итоговом запросе.
+   select     -- в итоговом запросе.
       to_char(s.sale_date, 'YYYY-MM') as selling_month,
       p.product_id,
       s.quantity,
@@ -200,7 +200,7 @@ on tab4.selling_month = tab3.selling_month;
 with tab1 as (
    select         
       s.customer_id,
-      concat(c.first_name, ' ', c.last_name) as customer, - объеденяем имя и фамилию
+      concat(c.first_name, ' ', c.last_name) as customer, -- объеденяем имя и фамилию
       sale_date,
       concat(e.first_name, ' ', e.last_name) as seller,
       p.price,
@@ -217,7 +217,7 @@ with tab1 as (
    on s.sales_person_id = e.employee_id
    left join products AS p
    on s.product_id = p.product_id
-   where price = 0 - условие выбора записей соответствующее акции
+   where price = 0 -- условие выбора записей соответствующее акции
 )
 select
    customer,
@@ -227,8 +227,4 @@ from tab1
 where flag_1 = 1 and flag_2 = 1 -- выбор flag_1 = первая клиент-дата, flag_2 = одна запись - один клиент
 order by customer_id; -- сортировка записей по id клиента
 /* Итоговая таблица предоставляет даты первых покупок клиентами соответствующих условиям акции
- *
-
-
-
-
+*/
