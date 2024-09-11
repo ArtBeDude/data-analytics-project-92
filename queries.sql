@@ -217,7 +217,7 @@ with tab1 as (
    on s.sales_person_id = e.employee_id
    left join products AS p
    on s.product_id = p.product_id
-   where price = 0 - условие выбора записей соответствующее акции
+   where price = 0 -- условие выбора записей соответствующее акции
 )
 select
    customer,
@@ -227,7 +227,8 @@ from tab1
 where flag_1 = 1 and flag_2 = 1 -- выбор flag_1 = первая клиент-дата, flag_2 = одна запись - один клиент
 order by customer_id; -- сортировка записей по id клиента
 /* Итоговая таблица предоставляет даты первых покупок клиентами соответствующих условиям акции
- *
+*/
+--
 
 
 
