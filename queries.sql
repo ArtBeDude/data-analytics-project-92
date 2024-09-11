@@ -73,13 +73,6 @@ tab2 as (
         as avg_total -- Вычисляем среднюю сумму по всем продажам
     from tab1
 )
-select
-    seller,
-    average_income
-from tab2
-group by 1, 2
-having average_income < AVG(avg_total)
-order by average_income
 
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
