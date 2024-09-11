@@ -200,7 +200,7 @@ on tab4.selling_month = tab3.selling_month;
 with tab1 as (
    select         
       s.customer_id,
-      concat(c.first_name, ' ', c.last_name) as customer, - объеденяем имя и фамилию
+      concat(c.first_name, ' ', c.last_name) as customer, -- объеденяем имя и фамилию
       sale_date,
       concat(e.first_name, ' ', e.last_name) as seller,
       p.price,
@@ -226,10 +226,6 @@ select
 from tab1 
 where flag_1 = 1 and flag_2 = 1 -- выбор flag_1 = первая клиент-дата, flag_2 = одна запись - один клиент
 order by customer_id; -- сортировка записей по id клиента
-/* Итоговая таблица предоставляет даты первых покупок клиентами соответствующих условиям акции
+/* Итоговая таблица предоставляет даты первых покупок клиентами,
+соответствующих условиям акции
 */
---
-
-
-
-
