@@ -240,7 +240,7 @@ tab2 AS (
             OVER (
                 PARTITION BY tab1.customer, tab1.seller
                 ORDER BY tab1.sale_date
-        ) 
+            )
         AS flag_1,
         ROW_NUMBER()
             OVER (PARTITION BY tab1.customer)
