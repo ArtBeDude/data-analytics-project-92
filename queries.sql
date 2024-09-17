@@ -13,29 +13,20 @@ FROM customers;
 * SELECT the required columns, merge the columns "e.first_name"
 * AND "e.last_name" FROM "employees" table
 */
-WITH tab1 AS (
-    SELECT
-        p.product_id,
-        s.quantity,
-        p.price,
-        CONCAT(e.first_name, ' ', e.last_name) AS seller
-    FROM sales AS s
-    LEFT JOIN employees AS e
-        ON s.sales_person_id = e.employee_id
-    LEFT JOIN products AS p
-        ON s.product_id = p.product_id
-)
-
-SELECT DISTINCT
-    seller, -- Сhoose only unique sellers
-    COUNT(*)
-        OVER (PARTITION BY seller)
-    AS operations, -- Вычисление количества операций одного продавца
+SELECT
+    CONCAT(e.first_name, ' ', e.last_name) AS seller,
     FLOOR(
-        SUM(quantity * price)
-            OVER (PARTITION BY seller)
-    ) AS income -- Вычисление суммы продаж продавца и округление до целого
-FROM tab1
+        SUM(p.price * s.quantity)
+    ) AS income,
+    COUNT(
+        CONCAT(e.first_name, ' ', e.last_name)
+    ) AS operations
+FROM sales AS s
+LEFT JOIN employees AS e
+    ON s.sales_person_id = e.employee_id
+LEFT JOIN products AS p
+    ON s.product_id = p.product_id
+GROUP BY seller
 ORDER BY income DESC
 LIMIT 10;
 /* В итоговом запросе мы получили таблицу с 10-ю продавцами
