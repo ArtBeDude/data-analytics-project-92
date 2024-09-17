@@ -38,40 +38,25 @@ LIMIT 10;
 */
 WITH tab1 AS (
     SELECT
-        p.product_id,
-        s.quantity,
-        p.price,
-        CONCAT(e.first_name, ' ', e.last_name) AS seller
+        CONCAT(e.first_name, ' ', e.last_name) AS seller,
+        FLOOR(
+            AVG(quantity * price)
+        ) AS average_income -- Вычисляем среднюю сумму продажи по продавцу
     FROM sales AS s
     LEFT JOIN employees AS e
         ON s.sales_person_id = e.employee_id
     LEFT JOIN products AS p
         ON s.product_id = p.product_id
-),
-
-/* В подзапросе "tab1" мы соединяем таблицы согласно референсам их id.
- * Выбираем необходимые столбцы, объеденяем столбцы "e.first_name"
- * и "e.last_name" из таблицы "employees"
- */
-tab2 AS (
-    SELECT DISTINCT
-        seller, -- оставляем только уникальные имена продавцов
-        FLOOR(
-            AVG(quantity * price)
-                OVER (PARTITION BY seller)
-        ) AS average_income, -- Вычисляем среднюю сумму продажи по продавцу
-        AVG(quantity * price)
-            OVER ()
-        AS avg_total -- Вычисляем среднюю сумму по всем продажам
-    FROM tab1
+    GROUP BY seller
 )
 
 SELECT
     seller,
     average_income
-FROM tab2
+FROM tab1
 GROUP BY seller, average_income
-HAVING average_income < AVG(avg_total)
+HAVING average_income < (SELECT AVG(average_income)
+                         FROM tab1)
 ORDER BY average_income;
 
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
