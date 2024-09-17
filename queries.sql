@@ -58,7 +58,6 @@ GROUP BY seller, average_income
 HAVING average_income < (SELECT AVG(average_income)
                          FROM tab1)
 ORDER BY average_income;
-
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
  */
