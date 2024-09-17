@@ -40,7 +40,7 @@ WITH tab1 AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
         FLOOR(
-            AVG(quantity * price)
+            AVG(s.quantity * p.price)
         ) AS average_income -- Вычисляем среднюю сумму продажи по продавцу
     FROM sales AS s
     LEFT JOIN employees AS e
@@ -55,8 +55,9 @@ SELECT
     average_income
 FROM tab1
 GROUP BY seller, average_income
-HAVING average_income < (SELECT AVG(average_income)
-                         FROM tab1)
+HAVING average_income < (SELECT AVG(
+    average_income)
+    FROM tab1)
 ORDER BY average_income;
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
