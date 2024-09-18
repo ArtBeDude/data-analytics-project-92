@@ -7,17 +7,15 @@ FROM customers;
 
 
 
-/* Request to find the top 10 sellers WITH the highest amounts sales
+/* Запрос по поиску лучших 10 продавцов по выручке
 * top_10_total_income
-* In the subquery "tab1" we join the tables according to their id references.
-* SELECT the required columns, merge the columns "e.first_name"
-* AND "e.last_name" FROM "employees" table
 */
 SELECT
     CONCAT(e.first_name, ' ', e.last_name) AS seller,
     FLOOR(
         SUM(p.price * s.quantity)
     ) AS income,
+    -- вычисление суммы выручки каждого продавца
     COUNT(
         CONCAT(e.first_name, ' ', e.last_name)
     ) AS operations
@@ -31,7 +29,6 @@ ORDER BY income DESC
 LIMIT 10;
 /* В итоговом запросе мы получили таблицу с 10-ю продавцами
    с самыми большими суммами продаж. */
-
 
 /* Запрос по поиску худших продавцов по средней сумме продаж
 * lowest_average_income
@@ -56,52 +53,37 @@ SELECT
 FROM tab1
 GROUP BY seller, average_income
 HAVING average_income < (SELECT AVG(average_income) FROM tab1)
+-- условие сравнение среднего чека продавца с средним общим чеком 
 ORDER BY average_income;
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
  */
 
 WITH tab1 AS (
-    SELECT
-        p.product_id,
-        s.quantity,
-        p.price,
+    SELECT 
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        -- приводим нумерацию к Mon = 0
+        -- объеденяем имя и фамилию продавца
         (EXTRACT(ISODOW FROM s.sale_date) - 1) AS num_of_day,
+        -- приводим нумерацию к Mon = 0
+        TO_CHAR(s.sale_date, 'Day') AS day_of_week,
         -- выделяем название дня недели
-        TO_CHAR(s.sale_date, 'Day') AS day_of_week
+        FLOOR(SUM(p.price * s.quantity)) AS income
     FROM sales AS s
     LEFT JOIN employees AS e
         ON s.sales_person_id = e.employee_id
     LEFT JOIN products AS p
         ON s.product_id = p.product_id
-),
-
-tab2 AS (
-    SELECT DISTINCT
-        seller,
-        day_of_week,
-        num_of_day,
-        SUM(price * quantity)
-            OVER (PARTITION BY seller, day_of_week)
-        AS income
-    FROM tab1
-    ORDER BY num_of_day, seller
-/* В подзапросе tab2 мы выводим уникальных продавцов и
- * считаем сумму продаж каждого продавца в партиции продавца и дня недели
- */
+    GROUP BY seller, num_of_day, day_of_week
 )
 
 SELECT
     seller,
     day_of_week,
-    FLOOR(income) AS income
-FROM tab2;
+    income 
+FROM tab1
+ORDER BY num_of_day, seller;
 /* Итоговая витрина продаж в разрезе продавцов и дней
 */
-
-
 
 /* Запрос по вычислению количества покупателей в разрезе
  * возрастных групп.
