@@ -1,4 +1,4 @@
-/* Запрос по поиску количества клиентов
+ /* Запрос по поиску количества клиентов
 * customer_count
 */
 SELECT COUNT(customer_id) AS customers_count
@@ -87,7 +87,7 @@ ORDER BY num_of_day, seller;
  * age_groups
 */
 SELECT
-    COUNT(age),
+    COUNT(age) AS age_count,
     CASE -- Присвоение категорий каждому диапазону возрастов
         WHEN age BETWEEN 16 AND 25 THEN '16-25'
         WHEN age BETWEEN 26 AND 40 THEN '26-40'
