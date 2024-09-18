@@ -1,11 +1,8 @@
-/* Query to determine the number of clients
+/* Запрос по поиску количества клиентов
 * customer_count
 */
 SELECT COUNT(customer_id) AS customers_count
 FROM customers;
-/* Вычисление количества клиентов из таблицы "сustomers"*/
-
-
 
 /* Запрос по поиску лучших 10 продавцов по выручке
 * top_10_total_income
@@ -19,6 +16,7 @@ SELECT
     COUNT(
         CONCAT(e.first_name, ' ', e.last_name)
     ) AS operations
+    -- вычисление кол-ва продаж продавца
 FROM sales AS s
 LEFT JOIN employees AS e
     ON s.sales_person_id = e.employee_id
@@ -36,6 +34,7 @@ LIMIT 10;
 WITH tab1 AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
+        -- соединение имени и фамилии продавца
         FLOOR(
             AVG(s.quantity * p.price)
         ) AS average_income -- Вычисляем среднюю сумму продажи по продавцу
@@ -55,12 +54,12 @@ GROUP BY seller, average_income
 HAVING average_income < (SELECT AVG(average_income) FROM tab1)
 -- условие сравнение среднего чека продавца с средним общим чеком 
 ORDER BY average_income;
+
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
  */
-
 WITH tab1 AS (
-    SELECT 
+    SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
         -- объеденяем имя и фамилию продавца
         (EXTRACT(ISODOW FROM s.sale_date) - 1) AS num_of_day,
@@ -79,98 +78,46 @@ WITH tab1 AS (
 SELECT
     seller,
     day_of_week,
-    income 
+    income
 FROM tab1
 ORDER BY num_of_day, seller;
-/* Итоговая витрина продаж в разрезе продавцов и дней
-*/
 
 /* Запрос по вычислению количества покупателей в разрезе
  * возрастных групп.
  * age_groups
 */
-WITH tab1 AS (
-    SELECT
-        *,
-        CASE -- Присвоение категорий каждому диапазону возрастов
-            WHEN age BETWEEN 16 AND 25 THEN '16-25'
-            WHEN age BETWEEN 26 AND 40 THEN '26-40'
-            WHEN age > 40 THEN '40+'
-        END AS age_category
-    FROM customers
-)
-
-SELECT DISTINCT
-    age_category,
-    -- подсчёт количества покупателей в категории
-    COUNT(age) OVER (PARTITION BY age_category) AS age_count
-FROM tab1
+SELECT
+    COUNT(age),
+    CASE -- Присвоение категорий каждому диапазону возрастов
+        WHEN age BETWEEN 16 AND 25 THEN '16-25'
+        WHEN age BETWEEN 26 AND 40 THEN '26-40'
+        WHEN age > 40 THEN '40+'
+    END AS age_category
+FROM customers
+GROUP BY age_category -- группировка по категории возрастов
 ORDER BY age_category;
 
-/* В этом подзапросе мы вычисляем количество уникальных покупателей
+/* Запрос для вычисления количества уникальных покупателей
  * и выручки в разрезе каждого месяца.
  * customers_by_month
  */
-WITH tab1 AS ( -- В подзапросе tab1 происходит приведение данных
-    SELECT -- к необходимым типам.
-        TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month,
-        CONCAT(c.first_name, ' ', c.last_name) AS customer_name
-    FROM sales AS s
-    LEFT JOIN customers AS c
-        ON s.customer_id = c.customer_id
-),
-
-tab2 AS ( -- В подзапросе tab2 мы находим уникальных покупателей в каждом месяце
-    SELECT DISTINCT
-        customer_name,
-        selling_month
-    FROM tab1
-),
-
-tab3 AS ( -- В подзапросе tab3 мы находим количество уникальных покупателей
-    SELECT DISTINCT -- в разрезе каждого месяца.
-        selling_month,
-        COUNT(customer_name)
-            OVER (PARTITION BY selling_month
-            )
-        AS customer_count
-    FROM tab2
-),
-
-tab4 AS ( -- tab4 представляет собой CTE с данными для подсчета
-    SELECT -- суммарной выручки в итоговом запросе.
-        p.product_id,
-        s.quantity,
-        p.price,
-        TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month
-    FROM sales AS s
-    LEFT JOIN products AS p
-        ON s.product_id = p.product_id
-)
-
-SELECT DISTINCT
-    tab4.selling_month,
-    tab3.customer_count AS total_customers,
+SELECT
+    TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month,
+    -- Приведение даты к формату год-месяц
+    COUNT(DISTINCT s.customer_id) AS total_customers,
+    -- счет уникальных покупателей
     FLOOR(
-        SUM(tab4.price * tab4.quantity)
-            OVER (PARTITION BY tab4.selling_month)
+        SUM(s.quantity * p.price)
     ) AS income
-FROM tab4
-INNER JOIN tab3
-    ON tab4.selling_month = tab3.selling_month;
-/* В итоговом запросе мы соеденили CTE tab4 и tab3 по месяцам,
- * посчитали и округлили суммарную выручку по
- * месяцам и указали количество уникальных клиентов
- * в каждом месяце
- */
-
-
+FROM sales AS s
+INNER JOIN products AS p
+    ON s.product_id = p.product_id
+GROUP BY selling_month; -- группировка по месяцу
 
 /* В этом запросе мы будем искать даты первых акционных покупок
  * клиентами.
  * special_offer
 */
-
 WITH tab1 AS (
     SELECT
         s.customer_id,
