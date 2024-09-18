@@ -9,6 +9,7 @@ FROM customers;
 */
 SELECT
     CONCAT(e.first_name, ' ', e.last_name) AS seller,
+    --  объединение имени и фамилии продавца
     FLOOR(
         SUM(p.price * s.quantity)
     ) AS income,
@@ -22,9 +23,9 @@ LEFT JOIN employees AS e
     ON s.sales_person_id = e.employee_id
 LEFT JOIN products AS p
     ON s.product_id = p.product_id
-GROUP BY seller
-ORDER BY income DESC
-LIMIT 10;
+GROUP BY seller -- группировка по продавцу
+ORDER BY income DESC -- сортировка по выручке в обратном порядке
+LIMIT 10; -- ограничение на 10 записей
 /* В итоговом запросе мы получили таблицу с 10-ю продавцами
    с самыми большими суммами продаж. */
 
@@ -37,23 +38,23 @@ WITH tab1 AS (
         -- соединение имени и фамилии продавца
         FLOOR(
             AVG(s.quantity * p.price)
-        ) AS average_income -- Вычисляем среднюю сумму продажи по продавцу
+        ) AS average_income -- вычисляем среднюю сумму продажи по продавцу
     FROM sales AS s
     LEFT JOIN employees AS e
         ON s.sales_person_id = e.employee_id
     LEFT JOIN products AS p
         ON s.product_id = p.product_id
-    GROUP BY seller
+    GROUP BY seller -- группировка по полю продавец
 )
 
 SELECT
     seller,
     average_income
 FROM tab1
-GROUP BY seller, average_income
+GROUP BY seller, average_income -- группировка по полю продавец, чек
 HAVING average_income < (SELECT AVG(average_income) FROM tab1)
 -- условие сравнение среднего чека продавца с средним общим чеком 
-ORDER BY average_income;
+ORDER BY average_income; -- сортировка по среднему чеку
 
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
@@ -67,6 +68,7 @@ WITH tab1 AS (
         TO_CHAR(s.sale_date, 'Day') AS day_of_week,
         -- выделяем название дня недели
         FLOOR(SUM(p.price * s.quantity)) AS income
+        -- вычисление и округление выручки
     FROM sales AS s
     LEFT JOIN employees AS e
         ON s.sales_person_id = e.employee_id
@@ -80,7 +82,7 @@ SELECT
     day_of_week,
     income
 FROM tab1
-ORDER BY num_of_day, seller;
+ORDER BY num_of_day, seller; -- сортировка по номеру дня и продавцу
 
 /* Запрос по вычислению количества покупателей в разрезе
  * возрастных групп.
@@ -95,7 +97,7 @@ SELECT
     END AS age_category
 FROM customers
 GROUP BY age_category -- группировка по категории возрастов
-ORDER BY age_category;
+ORDER BY age_category; -- сортировка по категории возрастов
 
 /* Запрос для вычисления количества уникальных покупателей
  * и выручки в разрезе каждого месяца.
@@ -103,12 +105,12 @@ ORDER BY age_category;
  */
 SELECT
     TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month,
-    -- Приведение даты к формату год-месяц
+    -- приведение даты к формату год-месяц
     COUNT(DISTINCT s.customer_id) AS total_customers,
     -- счет уникальных покупателей
     FLOOR(
         SUM(s.quantity * p.price)
-    ) AS income
+    ) AS income -- округление и вычисление выручки
 FROM sales AS s
 INNER JOIN products AS p
     ON s.product_id = p.product_id
@@ -123,6 +125,7 @@ SELECT DISTINCT ON (s.customer_id)
     s.sale_date,
     CONCAT(c.first_name, ' ', c.last_name) AS customer,
     CONCAT(e.first_name, ' ', e.last_name) AS seller
+    -- объединение имени и фамилии покупателя/продавца
 FROM sales AS s
 LEFT JOIN customers AS c
     ON s.customer_id = c.customer_id
@@ -130,7 +133,7 @@ LEFT JOIN employees AS e
     ON s.sales_person_id = e.employee_id
 LEFT JOIN products AS p
     ON s.product_id = p.product_id
-WHERE p.price = 0
+WHERE p.price = 0 -- условие выбора записей с ценой = 0
 ORDER BY s.customer_id, s.sale_date -- сортировка по id покупателя и дате
 /* Итоговая таблица предоставляет даты первых покупок клиентами,
  * соответствующих условиям акции
