@@ -118,47 +118,20 @@ GROUP BY selling_month; -- группировка по месяцу
  * клиентами.
  * special_offer
 */
-WITH tab1 AS (
-    SELECT
-        s.customer_id,
-        s.sale_date,
-        p.price,
-        -- Выводим полное имя клиента и продавца
-        CONCAT(c.first_name, ' ', c.last_name) AS customer,
-        CONCAT(e.first_name, ' ', e.last_name) AS seller
-    FROM sales AS s
-    LEFT JOIN customers AS c
-        ON s.customer_id = c.customer_id
-    LEFT JOIN employees AS e
-        ON s.sales_person_id = e.employee_id
-    LEFT JOIN products AS p
-        ON s.product_id = p.product_id
-),
-
-tab2 AS (
-    SELECT
-        tab1.*,
-        -- присваиваем номера в партиции клиент, продавец
-        ROW_NUMBER()
-            OVER (
-                PARTITION BY tab1.customer, tab1.seller
-                ORDER BY tab1.sale_date
-            )
-        AS flag_1,
-        ROW_NUMBER()
-            OVER (PARTITION BY tab1.customer)
-        AS flag_2
-    FROM tab1
-    WHERE tab1.price = 0 -- записи по условию акции
-)
-
-SELECT
-    customer,
+SELECT DISTINCT ON (s.customer_id)
+-- выбор по первому уникальному id покупателя
+    CONCAT(c.first_name, ' ', c.last_name) AS customer,
     sale_date,
-    seller
-FROM tab2
-WHERE flag_1 = 1 AND flag_2 = 1 -- выбор flag_1 = первая клиент-дата,
-ORDER BY customer_id; --  flag_2 = одна запись - один клиент
+    CONCAT(e.first_name, ' ', e.last_name) AS seller
+FROM sales AS s
+LEFT JOIN customers AS c
+    ON s.customer_id = c.customer_id
+LEFT JOIN employees AS e
+    ON s.sales_person_id = e.employee_id
+LEFT JOIN products AS p
+    ON s.product_id = p.product_id
+WHERE p.price = 0
+ORDER BY s.customer_id, sale_date -- сортировка по id покупателя и дате
 /* Итоговая таблица предоставляет даты первых покупок клиентами,
  * соответствующих условиям акции
 */
