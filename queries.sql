@@ -32,29 +32,25 @@ LIMIT 10; -- ограничение на 10 записей
 /* Запрос по поиску худших продавцов по средней сумме продаж
 * lowest_average_income
 */
-WITH tab1 AS (
-    SELECT
-        CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        -- соединение имени и фамилии продавца
-        FLOOR(
-            AVG(s.quantity * p.price)
-        ) AS average_income -- вычисляем среднюю сумму продажи по продавцу
+SELECT
+    CONCAT(e.first_name, ' ', e.last_name) AS seller,
+    -- соединение имени и фамилии продавца
+    FLOOR(
+        AVG(s.quantity * p.price)
+    ) AS average_income -- вычисляем среднюю сумму продажи по продавцу
+FROM sales AS s
+LEFT JOIN employees AS e
+    ON s.sales_person_id = e.employee_id
+LEFT JOIN products AS p
+    ON s.product_id = p.product_id
+GROUP BY seller -- группировка по полю продавец
+HAVING (
+    SELECT AVG(s.quantity * p.price)
     FROM sales AS s
-    LEFT JOIN employees AS e
-        ON s.sales_person_id = e.employee_id
     LEFT JOIN products AS p
         ON s.product_id = p.product_id
-    GROUP BY seller -- группировка по полю продавец
-)
-
-SELECT
-    seller,
-    average_income
-FROM tab1
-GROUP BY seller, average_income -- группировка по полю продавец, чек
-HAVING average_income < (SELECT AVG(average_income) FROM tab1)
--- условие сравнение среднего чека продавца с средним общим чеком 
-ORDER BY average_income; -- сортировка по среднему чеку
+) > AVG(s.quantity * p.price)
+ORDER BY average_income;
 
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
