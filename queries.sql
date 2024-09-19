@@ -89,12 +89,12 @@ ORDER BY num_of_day, seller; -- сортировка по номеру дня и
  * age_groups
 */
 SELECT
-    COUNT(age) AS age_count,
     CASE -- Присвоение категорий каждому диапазону возрастов
         WHEN age BETWEEN 16 AND 25 THEN '16-25'
         WHEN age BETWEEN 26 AND 40 THEN '26-40'
         WHEN age > 40 THEN '40+'
-    END AS age_category
+    END AS age_category,
+    COUNT(age) AS age_count
 FROM customers
 GROUP BY age_category -- группировка по категории возрастов
 ORDER BY age_category; -- сортировка по категории возрастов
