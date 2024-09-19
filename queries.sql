@@ -69,7 +69,7 @@ LEFT JOIN products AS p
     ON s.product_id = p.product_id
 GROUP BY seller, day_of_week, (EXTRACT(ISODOW FROM s.sale_date) - 1)
 -- группировка по продавцу, дню недели, номеру недели
-ORDER BY (EXTRACT(ISODOW FROM s.sale_date) - 1)
+ORDER BY (EXTRACT(ISODOW FROM s.sale_date) - 1);
 -- сортировка по номеру дня недели, где Monday = 0
 
 /* Запрос по вычислению количества покупателей в разрезе
