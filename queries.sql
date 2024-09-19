@@ -59,30 +59,22 @@ ORDER BY average_income; -- сортировка по среднему чеку
 /* Запрос по поиску продаж продавцов в разрезе дней недели.
  * day_of_week_income
  */
-WITH tab1 AS (
-    SELECT
-        CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        -- объеденяем имя и фамилию продавца
-        (EXTRACT(ISODOW FROM s.sale_date) - 1) AS num_of_day,
-        -- приводим нумерацию к Mon = 0
-        TO_CHAR(s.sale_date, 'Day') AS day_of_week,
-        -- выделяем название дня недели
-        FLOOR(SUM(p.price * s.quantity)) AS income
-        -- вычисление и округление выручки
-    FROM sales AS s
-    LEFT JOIN employees AS e
-        ON s.sales_person_id = e.employee_id
-    LEFT JOIN products AS p
-        ON s.product_id = p.product_id
-    GROUP BY seller, num_of_day, day_of_week
-)
-
 SELECT
-    seller,
-    day_of_week,
-    income
-FROM tab1
-ORDER BY num_of_day, seller; -- сортировка по номеру дня и продавцу
+    CONCAT(e.first_name, ' ', e.last_name) AS seller,
+    -- объеденяем имя и фамилию продавца
+    TO_CHAR(s.sale_date, 'Day') AS day_of_week,
+    -- выделяем название дня недели
+    FLOOR(SUM(p.price * s.quantity)) AS income
+    -- вычисление и округление выручки
+FROM sales AS s
+LEFT JOIN employees AS e
+    ON s.sales_person_id = e.employee_id
+LEFT JOIN products AS p
+    ON s.product_id = p.product_id
+GROUP BY seller, day_of_week, (EXTRACT(ISODOW FROM s.sale_date) - 1)
+-- группировка по продавцу, дню недели, номеру недели
+ORDER BY (EXTRACT(ISODOW FROM s.sale_date) - 1)
+-- сортировка по номеру дня недели, где Monday = 0
 
 /* Запрос по вычислению количества покупателей в разрезе
  * возрастных групп.
